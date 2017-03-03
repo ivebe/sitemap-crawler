@@ -1,6 +1,10 @@
 # sitemap-crawler
 Sitemap crawler/generator. For given URL it will return sitemap XML file.
 
+##Install
+composer require ivebe/sitemap-crawler
+
+
 ##Example
 
 ```php
