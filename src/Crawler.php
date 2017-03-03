@@ -172,7 +172,7 @@ class Crawler implements ICrawler
      */
     public function process($url)
     {
-        unset($this->links);
+        $this->links = [];
 
         $this->parse($url);
         $this->filter($url);
