@@ -1,5 +1,4 @@
 <?php
-
 /**
  * - treat_trailing_slash_as_duplicate
  *   links like http://sample.com/home and http://sample.com/home/ will be treated as same link

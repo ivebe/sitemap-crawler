@@ -6,7 +6,6 @@ use Ivebe\SitemapCrawler\Contracts\ILinkCollection;
 
 class LinkCollection implements ILinkCollection
 {
-
     /**
      * Array of links fetched on all pages
      *

@@ -1,6 +1,6 @@
 {
     "name": "ivebe/sitemap-crawler",
-    "description": "Sitemap crawler/generator. For giver URL it will return sitemap XML file.",
+    "description": "Sitemap crawler/generator. For given URL it will return sitemap XML file.",
     "type": "library",
     "license": "MIT",
     "authors": [

@@ -115,5 +115,4 @@ class SitemapService
 
         file_put_contents($saveToFile, $output);
     }
-
 }

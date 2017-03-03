@@ -6,7 +6,6 @@ use Ivebe\SitemapCrawler\Contracts\ICrawler;
 
 class Crawler implements ICrawler
 {
-
     /**
      * Configuration array
      *
@@ -180,5 +179,4 @@ class Crawler implements ICrawler
 
         return $this->links;
     }
-
 }
