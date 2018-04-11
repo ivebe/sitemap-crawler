@@ -87,7 +87,15 @@ class Crawler implements ICrawler
         @$dom->loadHTML($this->fetch($url));
 
         $xPath = new \DOMXPath($dom);
-        $elements = $xPath->query("//a/@href");
+
+		if(isset($this->config['ignore_nofollow']) && $this->config['ignore_nofollow'] === true) {
+			$query = "//a[not(@rel) or @rel!='nofollow']/@href";
+		}
+		else {
+			$query = "//a/@href";
+		} 
+
+        $elements = $xPath->query($query);
 
 
         foreach ($elements as $e)
