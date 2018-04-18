@@ -1,12 +1,12 @@
 # sitemap-crawler
 Sitemap crawler/generator. For given URL it will return sitemap XML file.
 
-##Install
+## Install
 ```sh
 composer require ivebe/sitemap-crawler
 ```
 
-##Example
+## Example
 
 ```php
 <?php
