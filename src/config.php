@@ -8,10 +8,14 @@
  *
  * - depth
  *   how many links will we crawl in depth
+ *
+ * - ignore_nofollow
+ *   option to avoid nofollow links
  */
 
 return [
     'treat_trailing_slash_as_duplicate' => true,
     'force_trailing_slash' => true,
-    'depth' => 2
+    'depth' => 2,
+    'ignore_nofollow' => true
 ];
