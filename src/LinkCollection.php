@@ -52,7 +52,7 @@ class LinkCollection implements ILinkCollection
     public function isCrawled($key)
     {
         if(!isset($this->links[$key]))
-            throw new \Exception('$key Key not set');
+            throw new \Exception("$key Key not set");
 
         return $this->links[$key]['crawled'];
     }
