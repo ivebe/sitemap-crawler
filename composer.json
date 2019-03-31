@@ -1,23 +1,5 @@
 {
-    "name": "ivebe/sitemap-crawler",
-    "description": "Sitemap crawler/generator. For given URL it will return sitemap XML file.",
-    "type": "library",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Danijel Petrovic",
-            "email": "dan@ivebe.com"
-        }
-    ],
     "require": {
-        "php": ">=5.5"
-    },
-    "autoload": {
-        "psr-4": {
-            "Ivebe\\SitemapCrawler\\": "src/"
-        },
-        "psr-0": {
-            "Ivebe\\SitemapCrawler\\": "src/"
-        }
+        "ivebe/sitemap-crawler": "^0.0.2"
     }
 }

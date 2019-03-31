@@ -1,19 +1,57 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0c2321c3cb422a2dfab0f4884715fa45",
-    "packages": [],
+    "content-hash": "fb1d7423ca5935409c3651097dc77317",
+    "packages": [
+        {
+            "name": "ivebe/sitemap-crawler",
+            "version": "0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ivebe/sitemap-crawler.git",
+                "reference": "b7d41d2d34a9e5d1ce52b2e4ce985dc8f207b6e1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ivebe/sitemap-crawler/zipball/b7d41d2d34a9e5d1ce52b2e4ce985dc8f207b6e1",
+                "reference": "b7d41d2d34a9e5d1ce52b2e4ce985dc8f207b6e1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ivebe\\SitemapCrawler\\": "src/"
+                },
+                "psr-0": {
+                    "Ivebe\\SitemapCrawler\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Danijel Petrovic",
+                    "email": "dan@ivebe.com"
+                }
+            ],
+            "description": "Sitemap crawler/generator. For given URL it will return sitemap XML file.",
+            "time": "2017-03-03T16:35:02+00:00"
+        }
+    ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {
-        "php": ">=5.5"
-    },
+    "platform": [],
     "platform-dev": []
 }

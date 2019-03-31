@@ -1,2 +1,4 @@
+cgi-bin/
 vendor/
 .idea/
+sitemap.xml
