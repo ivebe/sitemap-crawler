@@ -1,5 +1,7 @@
 # sitemap-crawler
-Sitemap crawler/generator. For given URL it will return sitemap XML file.
+Sitemap crawler/generator. For given URL it will return sitemap XML file with URLs and images.
+
+Can be used as Standalone or with Ajax
 
 ## Install
 ```sh
@@ -7,9 +9,10 @@ composer require ivebe/sitemap-crawler
 ```
 ## Features
 - crawl given URL and generate sitemap
+- crawl each found URL and add images to the sitemap
 - save the sitemap on your server or download it
 - configure the maximum deph
-- use as standalone
+- use as standalone (or CRON task)
 - call with ajax on button click
 - onscreen live report with urls count and urls list
 - search engines auto-submission (ping) with onscreen report

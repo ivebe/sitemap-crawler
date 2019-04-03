@@ -35,7 +35,8 @@
 
             <div id="final-results-wrapper" class="d-none">
                 <p class="lead">The sitemap has been generated in <span class="badge-primary ml-1 px-2" id="chrono-end-time"></span></p>
-                <p class="lead">The crawler found <span class="badge-primary ml-1 px-2" id="links-end-count"></span> valid urls</p>
+                <p class="lead">The crawler found <span class="badge-primary mx-1 px-2" id="links-end-count"></span> valid urls</p>
+                <p class="lead">The crawler found <span class="badge-primary mx-1 px-2" id="images-end-count"></span> valid images</p>
             </div>
 
             <!-- submission results report -->
@@ -93,29 +94,36 @@
                     $chronoEndTime            = $('#chrono-end-time'),
                     $linksCounter             = $('#links-counter'),
                     $linksEndCount            = $('#links-end-count'),
-                    linksCount                = 0;
+                    $imagesEndCount            = $('#images-end-count'),
+                    linksCount                = 0,
+                    imagesCount               = 0;
 
                 $crawlerWrapper.fadeOut().removeClass('d-none').fadeIn('slow');
 
                 var xhr     = new XMLHttpRequest();
                 xhr.open('POST', 'standalone-demo.php', true);
+                xhr.setRequestHeader('Cache-Control', 'no-cache');
                 xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                 xhr.send('ajax_enabled=true');
 
                 xhr.onreadystatechange = function() {
                   if (xhr.status == 200) {
+                    var response = xhr.response.split(/\r\n|\r|\n/);
                     if (xhr.readyState == XMLHttpRequest.LOADING) {
-                        // console.log('Loading');
-                        linksCount = xhr.response.split(/\r\n|\r|\n/).length
+                        console.log('Loading');
+                        linksCount = response.length;
+                        $target.text(response);
                         $linksCounter.text(linksCount);
                     }
                     if (xhr.readyState == XMLHttpRequest.DONE) {
-                        // console.log('Done');
-                        $response = xhr.response.split('-- submission-results--')
+                        console.log('Done');
+                        $response = xhr.response.split('--split--')
                         $target.text($response[0].split(/\r\n|\r|\n/));
 
-                        if (typeof($response[1]) !== undefined) {
-                            $submissionResultsWrapper.html($response[1]);
+                        imagesCount = $response[1];
+
+                        if (typeof($response[2]) !== undefined) {
+                            $submissionResultsWrapper.html($response[2]);
                             $submissionResultsWrapper.fadeOut().removeClass('d-none').fadeIn('slow');
                         }
 
@@ -128,6 +136,7 @@
                         var endTime = $chronoTarget.text().split(':');
                         $chronoEndTime.text(endTime[0] + ' hours ' + endTime[1] + ' minutes ' + endTime[2] + ' seconds');
                         $linksEndCount.text($linksCounter.text());
+                        $imagesEndCount.text(imagesCount);
                         $finalResultsWrapper.fadeOut().removeClass('d-none').fadeIn('slow');
                     }
                   }

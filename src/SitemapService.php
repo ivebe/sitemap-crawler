@@ -11,11 +11,14 @@ class SitemapService
      * @var ICrawler
      */
     private $crawler;
-
     /**
      * @var ILinkCollection
      */
     private $collection;
+    /**
+     * @var boolean
+     */
+    private $use_ajax;
     /**
      * @var boolean
      */
@@ -25,18 +28,15 @@ class SitemapService
      */
     private $search_engines;
     /**
-     * yahoo app id for yahoo submission
-     * @var string
+     * @var array
      */
-    private $yahoo_app_id;
+    private $indexed_images;
     /**
      * @var array
      */
     private $submission_urls = array(
         'google' => 'http://www.google.com/ping?sitemap=SITEMAP_URL',
-        'bing'   => 'http://www.bing.com/ping?sitemap=SITEMAP_URL',
-        'yahoo'  => 'http://search.yahooapis.com/SiteExplorerService/V1/updateNotification?appid=YAHOO_APP_ID&url=SITEMAP_URL',
-        'ask'    => 'http://submissions.ask.com/ping?sitemap=SITEMAP_URL'
+        'bing'   => 'http://www.bing.com/ping?sitemap=SITEMAP_URL'
     );
     /**
      * @var integer depth to which we will crawl
@@ -50,12 +50,14 @@ class SitemapService
         $this->url            = $url;
         $this->show_results   = $config['show_results'];
         $this->search_engines = $config['search_engines_submission']['search_engines'];
-        $this->yahoo_app_id   = $config['search_engines_submission']['yahoo_app_id'];
 
         $this->depth = $this->crawler->getDepth();
 
+        $this->use_ajax = false;
+
         if (isset($_POST['ajax_enabled']) && $_POST['ajax_enabled'] == 'true') {
             // show results auto-enabled if we use Ajax
+            $this->use_ajax = true;
             $this->show_results = true;
         }
 
@@ -74,6 +76,17 @@ class SitemapService
         foreach ($links as $link) {
             if (!$this->collection->exists($link)) {
                 $this->collection->add($link);
+
+                if ($this->show_results === true) {
+                    echo $link . "\n";
+                    if ($this->use_ajax !== true) {
+                        echo '<br>';
+                    }
+                    echo str_pad("", 1024, " ");
+
+                    @ob_flush();
+                    @flush();
+                }
             }
         }
     }
@@ -100,14 +113,6 @@ class SitemapService
                         $links = $this->crawler->process($link['url']);
                         $this->bulkAdd($links);
                         $this->collection->links[$k]['crawled'] = true;
-
-                        if ($this->show_results === true) {
-                            echo $link['url'] . "\n";
-                            echo str_pad("", 1024, " ");
-
-                            @ob_flush();
-                            @flush();
-                        }
                     }
                 }
 
@@ -127,16 +132,39 @@ class SitemapService
     public function export($changefreq, $saveToFile = false)
     {
         $output  = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" ';
+        $output .= 'xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" ';
         $output .= 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ';
         $output .= 'xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 ';
         $output .= 'http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">';
 
         $output .= PHP_EOL;
 
+        $links = array();
         foreach ($this->collection->links as $link) {
+            $links[] = $link['url'];
+        }
+
+        natsort($links);
+        $links = array_values($links);
+
+        // we don't want to repeat all images in all pages
+        $this->indexed_images = array();
+        foreach ($links as $link) {
+            $images = $this->crawler->getImages($link);
             $output .= '<url>' . PHP_EOL;
-            $output .= '<loc>' . $link['url'] . '</loc>' . PHP_EOL;
-            $output .= '<changefreq>' . $changefreq . '</changefreq>' . PHP_EOL;
+            $output .= '    <loc>' . $link . '</loc>' . PHP_EOL;
+            $output .= '    <changefreq>' . $changefreq . '</changefreq>' . PHP_EOL;
+            if ($images !== false) {
+                foreach ($images as $img) {
+                    if (!in_array($img['src'], $this->indexed_images)) {
+                        $output .= '    <image:image>' . PHP_EOL;
+                        $output .= '    <image:loc>' . $img['src'] . '</image:loc>' . PHP_EOL;
+                        $output .= '    <image:caption>' . str_replace('&', '&amp;', $img['alt']) . '</image:caption>' . PHP_EOL;
+                        $output .= '    </image:image>' . PHP_EOL;
+                        $this->indexed_images[] = $img['src'];
+                    }
+                }
+            }
             $output .= '</url>' . PHP_EOL;
         }
 
@@ -151,6 +179,20 @@ class SitemapService
         }
 
         file_put_contents($saveToFile, $output);
+
+        if ($this->show_results === true) {
+            if ($this->use_ajax === true) {
+                echo '--split--' . "\n";
+                echo count($this->indexed_images);
+            } else {
+                echo '<hr>';
+                echo '<p><strong>The crawler found ' . count($links) . ' URLS and ' . count($this->indexed_images) . ' images</strong></p>';
+            }
+            echo str_pad("", 1024, " ");
+
+            @ob_flush();
+            @flush();
+        }
     }
 
     /**
@@ -159,7 +201,8 @@ class SitemapService
     public function submitSiteMap($sitemap_url)
     {
         if ($this->show_results === true) {
-            echo '-- submission-results--' . "\n";
+            echo '--split--' . "\n";
+            echo '<h3>Search engines results</h3>';
             echo str_pad("", 1024, " ");
 
             @ob_flush();
@@ -168,15 +211,15 @@ class SitemapService
 
         foreach ($this->search_engines as $engine_name) {
             $submission_url = $this->submission_urls[$engine_name];
-            $find           = array('SITEMAP_URL', 'YAHOO_APP_ID');
-            $replace        = array($sitemap_url, $this->yahoo_app_id);
-            $submission_url = urlencode(str_replace($find, $replace, $sitemap_url));
+            $submission_url = str_replace('SITEMAP_URL', $sitemap_url, $submission_url);
 
             $returnCode     = $this->submit($submission_url);
 
             if ($this->show_results === true) {
                 echo '<div class="submission-results">';
                 echo '<h4>' . ucfirst($engine_name) . '</h4>';
+                echo '<p>Sitemap URL: ' . $sitemap_url . '</p>';
+                echo '<p>Submission URL: ' . $submission_url . '</p>';
                 if ($returnCode != 200) {
                     echo '<p>Error ' . $returnCode . ': ' . $sitemap_url . '</p>';
                 } else {
@@ -212,13 +255,15 @@ class SitemapService
      */
     private function disableOb()
     {
+        // header required when using PHP-FPM
+        header('Content-Encoding: none');
         // Turn off output buffering
-        @ini_set('output_buffering', 'off');
+        ini_set('output_buffering', 'off');
         // Turn off PHP output compression
-        @ini_set('zlib.output_compression', 0);
+        ini_set('zlib.output_compression', 0);
         // Implicitly flush the buffer(s)
-        @ini_set('implicit_flush', 1);
-        @ob_implicit_flush(1);
+        ini_set('implicit_flush', 1);
+        ob_implicit_flush(1);
         // Clear, and turn off output buffering
         while (ob_get_level() > 0) {
             // Get the curent level
@@ -235,5 +280,6 @@ class SitemapService
             @apache_setenv('no-gzip', 1);
             @apache_setenv('dont-vary', 1);
         }
+        set_time_limit(0);
     }
 }

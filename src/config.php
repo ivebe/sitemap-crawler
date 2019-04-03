@@ -17,22 +17,16 @@ $config = array(
     'crawler' => array(
         'treat_trailing_slash_as_duplicate' => true,
         'force_trailing_slash'              => false,
-        'depth'                             => 2,
+        'depth'                             => 1,
         'ignore_nofollow'                   => true
     ),
-    'sitemap_service' => array(
-        'show_results' => true
-    ),
+    'show_results' => true,
     'search_engines_submission' => array(
-        'enabled' => true,
+        'enabled' => false,
         'search_engines' => array(
             'google',
-            'bing',
-            'yahoo',
-            'ask'
-        ),
-        // get your yahoo APP_ID here: https://developer.yahoo.com/
-        'yahoo_app_id' => 'your-yahoo-app-id'
+            'bing'
+        )
     )
 );
 

@@ -24,7 +24,7 @@ $dest = __DIR__ . '/sitemap.xml';
  */
 $sitemap_url = 'https://www.google.com/sitemap.xml';
 
-$crawler    = new Crawler($config['crawler']);
+$crawler    = new Crawler($url, $config['crawler']);
 $collection = new LinkCollection();
 $provider   = new SitemapService($crawler, $collection, $url, $config);
 
