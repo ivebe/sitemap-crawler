@@ -5,6 +5,10 @@
     "license": "MIT",
     "authors": [
         {
+            "name": "Danijel Petrovic",
+            "email": "dan@ivebe.com"
+        },
+        {
             "name": "Dimitar Kudev",
             "email": "dimitar.kudev@gmail.com"
         }
