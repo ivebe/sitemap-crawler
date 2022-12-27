@@ -112,7 +112,7 @@ class Crawler implements ICrawler
     private function shouldExclude($linkHaystack)
     {
         foreach ($this->getIgnoredHrefs() as $ignoredHref) {
-            if (strpos($linkHaystack, $ignoredHref)) {
+            if (strpos($linkHaystack, $ignoredHref) !== false) {
                 return true;
             }
         }
