@@ -88,18 +88,45 @@ class Crawler implements ICrawler
 
         $xPath = new \DOMXPath($dom);
 
-		if(isset($this->config['ignore_nofollow']) && $this->config['ignore_nofollow'] === true) {
-			$query = "//a[not(@rel) or @rel!='nofollow']/@href";
-		}
-		else {
-			$query = "//a/@href";
-		} 
+        // Add configuration option to ignore all `a tags` with data attribute `data-nofollow` and `rel='nofollow'`
+        $query = "//a/@href";
+        if(isset($this->config['ignore_nofollow']) && $this->config['ignore_nofollow'] === true) {
+            $query = "//a[not(@rel) and not(@data-nofollow) or @rel!='nofollow']/@href";
+        }
 
         $elements = $xPath->query($query);
 
+        foreach ($elements as $e) {
+            $link = $e->nodeValue;
+            if ($this->shouldExclude($link)) {
+                continue;
+            }
+            $this->links[] = $link;
+        }
+    }
 
-        foreach ($elements as $e)
-            $this->links[] = $e->nodeValue;
+    /**
+     * @param string $linkHaystack
+     * @return bool
+     */
+    private function shouldExclude($linkHaystack)
+    {
+        foreach ($this->getIgnoredHrefs() as $ignoredHref) {
+            if (strpos($linkHaystack, $ignoredHref)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    /**
+     * @return array
+     */
+    private function getIgnoredHrefs()
+    {
+        return isset($this->config['ignored_hrefs'])
+            ? (array)$this->config['ignored_hrefs']
+            : [];
     }
 
     /**
